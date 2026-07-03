@@ -1,4 +1,4 @@
-# Starting a Simple Database Web Application
+# Building a Simple Database Web Application
 
 ![](./images/banner.jpg)
 
