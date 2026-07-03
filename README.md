@@ -243,21 +243,32 @@ if __name__ == "__main__":
     display_todos()
 ```
 
+---
+
 In terminal, run the following command to execute the app:
 
 ```
 python app.py
 ```
 
+---
+
+You can try to modify the SQL statements in the **app.py** to perform different SQL tasks, such as adding `WHERE` clauses, updating records, or deleting records. For example, you can change the query to:
+
+```
+sql = "SELECT id, todo, completed FROM todos WHERE completed = 1"
+
 # Create a Simple Node.js App
 
 In CLI, run the following commmands to create a new node.js project.
 
 ```
+
 mkdir todo-app-node
 cd todo-app-node
 npm init -y
 npm install mysql2 dotenv
+
 ```
 
 ---
@@ -265,11 +276,13 @@ npm install mysql2 dotenv
 Open your project folder in VS Code. Create a file named **.env** in the root of your project directory and add your MySQL database connection details:
 
 ```
+
 DB_HOST=localhost
 DB_USER=root
 DB_PASSWORD=12345678
 DB_NAME=mydb
 DB_PORT=3306
+
 ```
 
 ---
@@ -277,21 +290,22 @@ DB_PORT=3306
 Create a file named app.js and paste the following code. It uses a modern connection pool and async/await for clean, readable asynchronous JavaScript.
 
 ```
+
 require('dotenv').config();
 const mysql = require('mysql2/promise');
 
 async function displayTodos() {
-  let connection;
+let connection;
 
-  try {
-    // 1. Create the connection to the database
-    connection = await mysql.createConnection({
-      host: process.env.DB_HOST,
-      user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME,
-      port: process.env.DB_PORT || 3306
-    });
+try {
+// 1. Create the connection to the database
+connection = await mysql.createConnection({
+host: process.env.DB_HOST,
+user: process.env.DB_USER,
+password: process.env.DB_PASSWORD,
+database: process.env.DB_NAME,
+port: process.env.DB_PORT || 3306
+});
 
     console.log('Successfully connected to the MySQL database!\n');
 
@@ -306,18 +320,19 @@ async function displayTodos() {
       console.table(rows); // Prints a beautiful table in your console
     }
 
-  } catch (error) {
-    console.error('Error connecting or querying the database:', error.message);
-  } finally {
-    // 4. Always close the connection when done
-    if (connection) {
-      await connection.end();
-    }
-  }
+} catch (error) {
+console.error('Error connecting or querying the database:', error.message);
+} finally {
+// 4. Always close the connection when done
+if (connection) {
+await connection.end();
+}
+}
 }
 
 // Run the application
 displayTodos();
+
 ```
 
 ---
@@ -325,7 +340,9 @@ displayTodos();
 Go back to your terminal and run the following command to execute the app:
 
 ```
+
 node app.js
+
 ```
 
 ---
@@ -333,5 +350,9 @@ node app.js
 You can try to modify the SQL statements in the **app.js** to perform different SQL tasks, such as adding `WHERE` clauses, updating records, or deleting records. For example, you can change the query to:
 
 ```
-const [rows] = await connection.execute('SELECT * FROM todos WHERE completed = 1');
+
+const [rows] = await connection.execute('SELECT \* FROM todos WHERE completed = 1');
+
+```
+
 ```
