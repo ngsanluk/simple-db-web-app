@@ -1,4 +1,4 @@
-# Building a Simple Database Web Application
+# Building a Simple Database Application
 
 ![](./images/banner.jpg)
 
@@ -106,9 +106,9 @@ CREATE TABLE `todos` (
 ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 ```
 
-If you run `SHOW TABLES;` command again, you should see the `todos` table listed.
+If you run `SHOW TABLES;` command again, you should see the **todos** table listed.
 
-# Run the following command to insert some sample data into the `todos` table.
+# Run the following command to insert some sample data into the **todos** table.
 
 ```
 INSERT INTO `todos`
@@ -139,7 +139,7 @@ SELECT * FROM `todos` WHERE `completed` = 1;
 SELECT * FROM `todos`  WHERE `completed` = 0;
 ```
 
-You can also practice updating and deleting records in the `todos` table using the following commands:
+You can also practice updating and deleting records in the **todos** table using the following commands:
 
 ```
 UPDATE `todos` SET `completed` = 1 WHERE `id` = 4;
@@ -149,8 +149,189 @@ UPDATE `todos` SET `completed` = 1 WHERE `id` = 4;
 DELETE FROM `todos` WHERE `id` = 10;
 ```
 
-Or to insert more new records into the `todos` table:
+Or to insert more new records into the **todos** table:
 
 ```
 INSERT INTO `todos` (`todo`, `completed`) VALUES ('Task 11 ...', 0);
+```
+
+# Create a Simple Python App
+
+In CLI, run the following commands to create a new Python project.
+
+```
+mkdir todo-app-py
+cd todo-app-py
+```
+
+---
+
+Install required python packages using pip. You can use a virtual environment if you prefer.
+
+```
+pip install pymysql python-dotenv tables
+```
+
+---
+
+Open your python project folder in VS Code. Create a file named **.env** in the root of your project directory and add your MySQL database connection details:
+
+```
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=12345678
+DB_NAME=mydb
+DB_PORT=3306
+```
+
+---
+
+Create a file named app.py and paste the following code. It uses a context manager (with statements) to ensure that database connections and cursors are properly closed even if an error occurs.
+
+```
+import os
+from dotenv import load_dotenv
+import pymysql
+
+# Load environment variables from .env file
+load_dotenv()
+
+def display_todos():
+    connection = None
+    try:
+        # 1. Connect to the database
+        connection = pymysql.connect(
+            host=os.getenv('DB_HOST'),
+            user=os.getenv('DB_USER'),
+            password=os.getenv('DB_PASSWORD'),
+            database=os.getenv('DB_NAME'),
+            port=int(os.getenv('DB_PORT', 3306)),
+            cursorclass=pymysql.cursors.DictCursor # Returns rows as dictionaries (like JSON)
+        )
+
+        print("Successfully connected to the MySQL database!\n")
+
+        # 2. Execute the query using a cursor
+        with connection.cursor() as cursor:
+            sql = "SELECT id, todo, completed FROM todos"
+            cursor.execute(sql)
+            rows = cursor.fetchall()
+
+            # 3. Display the results
+            if not rows:
+                print("No todos found in the database.")
+            else:
+                print("--- TODO LIST ---")
+                # Print header
+                print(f"{'ID':<6} | {'Todo Item':<25} | {'Completed':<10}")
+                print("-" * 48)
+                # Print data rows
+                for row in rows:
+                    # Convert 1/0 to Yes/No or keep as numbers depending on preference
+                    status = "Yes" if row['completed'] == 1 else "No"
+                    print(f"{row['id']:<6} | {row['todo']:<25} | {status:<10}")
+
+    except pymysql.MySQLError as e:
+        print(f"Error connecting or querying the database: {e}")
+
+    finally:
+        # 4. Clean up connection
+        if connection:
+            connection.close()
+
+if __name__ == "__main__":
+    display_todos()
+```
+
+In terminal, run the following command to execute the app:
+
+```
+python app.py
+```
+
+# Create a Simple Node.js App
+
+In CLI, run the following commmands to create a new node.js project.
+
+```
+mkdir todo-app-node
+cd todo-app-node
+npm init -y
+npm install mysql2 dotenv
+```
+
+---
+
+Open your project folder in VS Code. Create a file named **.env** in the root of your project directory and add your MySQL database connection details:
+
+```
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=12345678
+DB_NAME=mydb
+DB_PORT=3306
+```
+
+---
+
+Create a file named app.js and paste the following code. It uses a modern connection pool and async/await for clean, readable asynchronous JavaScript.
+
+```
+require('dotenv').config();
+const mysql = require('mysql2/promise');
+
+async function displayTodos() {
+  let connection;
+
+  try {
+    // 1. Create the connection to the database
+    connection = await mysql.createConnection({
+      host: process.env.DB_HOST,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
+      port: process.env.DB_PORT || 3306
+    });
+
+    console.log('Successfully connected to the MySQL database!\n');
+
+    // 2. Query all records from the todos table
+    const [rows] = await connection.execute('SELECT * FROM todos');
+
+    // 3. Display the results
+    if (rows.length === 0) {
+      console.log('No todos found in the database.');
+    } else {
+      console.log('--- TODO LIST ---');
+      console.table(rows); // Prints a beautiful table in your console
+    }
+
+  } catch (error) {
+    console.error('Error connecting or querying the database:', error.message);
+  } finally {
+    // 4. Always close the connection when done
+    if (connection) {
+      await connection.end();
+    }
+  }
+}
+
+// Run the application
+displayTodos();
+```
+
+---
+
+Go back to your terminal and run the following command to execute the app:
+
+```
+node app.js
+```
+
+---
+
+You can try to modify the SQL statements in the **app.js** to perform different SQL tasks, such as adding `WHERE` clauses, updating records, or deleting records. For example, you can change the query to:
+
+```
+const [rows] = await connection.execute('SELECT * FROM todos WHERE completed = 1');
 ```
