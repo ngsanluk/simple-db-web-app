@@ -38,6 +38,13 @@ Run the following command in your terminal to start a MySQL database container i
 docker run --name docker-mysql -e MYSQL_ROOT_PASSWORD=12345678 -p 3306:3306 -d mysql
 ```
 
+- `--name` specifies the name of the container.
+- `docker-mysql` is the name of the container. You can change it to any name you like. It must be unique on your system.
+- `-e` sets environment variables. Here, we set the root password for MySQL to `12345678`. You can change it to any password you like.
+- `-p` maps the container's port 3306 to your local machine's port 3306. This allows you to connect to the MySQL server from your local machine.
+- `-d` runs the container in detached mode, meaning it runs in the background.
+- `mysql` is the name of the Docker image to use. If you don't have this image locally, Docker will download it from Docker Hub.
+
 Type `docker ps` again to verify that the MySQL container is running. You should see an output similar to this:
 
 ```
@@ -47,13 +54,13 @@ d1f3e5c6b7a8   mysql     "docker-entrypoint.s…"   10 seconds ago   Up 9 second
 
 # Download and Start MySQL Workbench
 
-You've just started a MySQL database in Docker. Now, you need a clienttool to connect and manage your database. MySQL Workbench is a popular choice for this purpose.
+You've just started a MySQL database in Docker. Now, you need a client tool to connect and manage your database. MySQL Workbench is a popular choice for this purpose.
 
 ![](https://www.mysql.com/common/images/products/MySQL_Workbench_Mainscreen_Windows.gif)
 
 [Download MySQL Workbench](https://www.mysql.com/products/workbench/)
 
-You can also connect by using the command line tool `mysql` that comes with MySQL.
+You can also connect to MySQL server by using the command line tool `mysql` that comes with MySQL.
 
 First you have to connect to the container running MySQL.
 
@@ -61,11 +68,20 @@ First you have to connect to the container running MySQL.
 docker exec -it docker-mysql bash
 ```
 
-Then run the following command to start sql client and connect to the MySQL server:
+- `docker exec` allows you to run commands in a running container.
+- `-it` allows you to interact with the container's terminal.
+- `docker-mysql` is the name of the container you want to connect to. Make sure to use the same name you specified when starting the container.
+- `bash` is the command to run inside the container. It opens a bash shell.
+
+Then run the following command to start MySQL client and connect to the MySQL server:
 
 ```
 mysql -h localhost -u root -p
 ```
+
+- `-h localhost` specifies the host to connect to. Since the MySQL server is running in the same container, you can use `localhost`.
+- `-u root` specifies the username to connect with. Here, we are using the root user.
+- `-p` prompts you to enter the password for the specified user.
 
 You have to input the password you set when starting the MySQL container, which is `12345678` in this case.
 
@@ -93,7 +109,7 @@ SHOW TABLES;
 
 # Creating a Table
 
-Run the followng commands to create a table named `todos`
+Run the followng commands in MySQL client to create a table named `todos`
 
 ```
 DROP TABLE IF EXISTS `todos`;
@@ -108,7 +124,7 @@ CREATE TABLE `todos` (
 
 If you run `SHOW TABLES;` command again, you should see the **todos** table listed.
 
-# Run the following command to insert some sample data into the **todos** table.
+# Run the following command to insert some sample records into the **todos** table.
 
 ```
 INSERT INTO `todos`
@@ -166,7 +182,7 @@ cd todo-app-py
 
 ---
 
-Install required python packages using pip. You can use a virtual environment if you prefer.
+Install required python packages using `pip`. You can use a virtual environment if you prefer.
 
 ```
 pip install pymysql python-dotenv tables
@@ -274,7 +290,7 @@ npm install mysql2 dotenv
 
 ---
 
-Open your project folder in VS Code. Create a file named **.env** in the root of your project directory and add your MySQL database connection details:
+Open your newly created Node.js project folder in VS Code. Create a file named **.env** in the root of your project directory and add your MySQL database connection details:
 
 ```
 
@@ -351,11 +367,5 @@ node app.js
 You can try to modify the SQL statements in the **app.js** to perform different SQL tasks, such as adding `WHERE` clauses, updating records, or deleting records. For example, you can change the query to:
 
 ```
-
-const [rows] = await connection.execute('SELECT \* FROM todos WHERE completed = 1');
-
-```
-
-```
-
+const [rows] = await connection.execute('SELECT * FROM todos WHERE completed = 1');
 ```
