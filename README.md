@@ -257,6 +257,7 @@ You can try to modify the SQL statements in the **app.py** to perform different 
 
 ```
 sql = "SELECT id, todo, completed FROM todos WHERE completed = 1"
+```
 
 # Create a Simple Node.js App
 
@@ -352,6 +353,8 @@ You can try to modify the SQL statements in the **app.js** to perform different 
 ```
 
 const [rows] = await connection.execute('SELECT \* FROM todos WHERE completed = 1');
+
+```
 
 ```
 
